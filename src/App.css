@@ -17,6 +17,7 @@ body {
   color: #111827;
   overflow: hidden;
 }
+
 .status-online {
   color: #86efac !important;
   font-weight: bold;
@@ -311,6 +312,32 @@ input {
   opacity: 0.8;
 }
 
+.image-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 20px;
+}
+
+.image-button:hover {
+  background: #d1d5db;
+}
+
+.chat-image {
+  display: block;
+  max-width: 280px;
+  max-height: 320px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
 .chat-input {
   flex-shrink: 0;
   display: flex;
@@ -319,6 +346,7 @@ input {
   border-top: 1px solid #e5e7eb;
   background: white;
 }
+
 .chat-input input {
   flex: 1;
   padding: 12px 14px;

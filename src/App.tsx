@@ -17,7 +17,9 @@ type RoomMessage = {
   senderType: 'human' | 'ai';
   senderId: string;
   senderName: string;
-  content: string;
+  content?: string;
+  messageType?: 'text' | 'image';
+  imageUrl?: string;
   createdAt?: string;
 };
 
@@ -71,6 +73,54 @@ function App() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isSending]);
+
+  async function uploadImage(file: File) {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const response = await fetch(`${API_URL}/rooms/upload-image`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Upload ảnh thất bại');
+    }
+
+    return response.json() as Promise<{
+      imageUrl: string;
+      publicId: string;
+    }>;
+  }
+
+  async function sendImage(file: File) {
+    if (!room || isSending) {
+      return;
+    }
+
+    const currentRoom = room;
+
+    setIsSending(true);
+
+    try {
+      const result = await uploadImage(file);
+
+      socket.emit('send_room_message', {
+        roomId: currentRoom._id,
+        senderId,
+        senderName,
+        content: '',
+        messageType: 'image',
+        imageUrl: result.imageUrl,
+        askAi: false,
+      });
+    } catch (error) {
+      console.error(error);
+      alert('Không gửi được ảnh.');
+    } finally {
+      setIsSending(false);
+    }
+  }
 
   async function createRoom() {
     if (!roomName.trim() || !senderName.trim() || isCreatingRoom) {
@@ -388,7 +438,11 @@ function App() {
                       )}
                     </div>
 
-                    <div className="message-content">{message.content}</div>
+                    {message.messageType === 'image' && message.imageUrl ? (
+                      <img className="chat-image" src={message.imageUrl} alt="Ảnh đã gửi" />
+                    ) : (
+                      <div className="message-content">{message.content}</div>
+                    )}
                   </div>
                 </div>
               );
@@ -411,6 +465,24 @@ function App() {
           </section>
 
           <footer className="chat-input">
+            <label className="image-button">
+              📷
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+
+                  if (file) {
+                    sendImage(file);
+                  }
+
+                  event.target.value = '';
+                }}
+              />
+            </label>
+
             <input
               value={input}
               placeholder="Nhập tin nhắn..."
