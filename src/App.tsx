@@ -25,7 +25,7 @@ function App() {
   const [room, setRoom] = useState<Room | null>(null);
   const [roomName, setRoomName] = useState('Nhóm tư vấn nội bộ');
   const [isSocketConnected, setIsSocketConnected] = useState(false);
-
+  const [joinRoomId, setJoinRoomId] = useState('');
 
 
   const [senderName, setSenderName] = useState(() => {
@@ -119,7 +119,41 @@ function App() {
       setIsCreatingRoom(false);
     }
   }
+  async function joinRoom() {
+    const roomId = joinRoomId.trim();
 
+    if (!roomId || !senderName.trim()) {
+      return;
+    }
+
+    try {
+      localStorage.setItem('senderName', senderName);
+
+      const response = await fetch(`${API_URL}/rooms/${roomId}/messages`);
+
+      if (!response.ok) {
+        throw new Error('Không tìm thấy phòng');
+      }
+
+      const data = await response.json();
+
+      const joinedRoom: Room = {
+        _id: roomId,
+        name: `Phòng ${roomId.slice(-6)}`,
+        type: 'group',
+        enableAi: true,
+      };
+
+      setRoom(joinedRoom);
+      setMessages(data);
+
+      localStorage.setItem('roomId', roomId);
+      localStorage.setItem('roomName', joinedRoom.name);
+    } catch (error) {
+      console.error(error);
+      alert('Không tham gia được phòng. Kiểm tra Room ID hoặc backend.');
+    }
+  }
   async function loadMessages(roomId: string) {
     try {
       const response = await fetch(`${API_URL}/rooms/${roomId}/messages`);
@@ -246,7 +280,7 @@ function App() {
       <div className="page">
         <div className="setup-card">
           <h1>AI Group Chat</h1>
-          <p>Tạo phòng chat nhóm có AI Assistant tham gia.</p>
+          <p>Tạo phòng mới hoặc tham gia phòng có sẵn.</p>
 
           <label>Tên của bạn</label>
           <input
@@ -254,6 +288,10 @@ function App() {
             onChange={(event) => setSenderName(event.target.value)}
             placeholder="Ví dụ: Phong"
           />
+
+          <div className="setup-divider" />
+
+          <h3>Tạo phòng mới</h3>
 
           <label>Tên phòng</label>
           <input
@@ -264,6 +302,21 @@ function App() {
 
           <button onClick={createRoom} disabled={isCreatingRoom}>
             {isCreatingRoom ? 'Đang tạo...' : 'Tạo phòng chat'}
+          </button>
+
+          <div className="setup-divider" />
+
+          <h3>Tham gia phòng</h3>
+
+          <label>Room ID</label>
+          <input
+            value={joinRoomId}
+            onChange={(event) => setJoinRoomId(event.target.value)}
+            placeholder="Dán Room ID vào đây"
+          />
+
+          <button className="secondary-setup-button" onClick={joinRoom}>
+            Tham gia phòng
           </button>
         </div>
       </div>

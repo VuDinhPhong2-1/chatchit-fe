@@ -21,6 +21,21 @@ body {
   font-weight: bold;
 }
 
+.setup-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 22px 0;
+}
+
+.setup-card h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+.secondary-setup-button {
+  background: #111827 !important;
+}
+
 button,
 input {
   font: inherit;
