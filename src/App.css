@@ -5,7 +5,7 @@
 html,
 body,
 #root {
-  height: 100%;
+  min-height: 100%;
 }
 
 body {
@@ -15,7 +15,6 @@ body {
     sans-serif;
   background: #eef2f7;
   color: #111827;
-  overflow: hidden;
 }
 
 .status-online {
@@ -49,9 +48,8 @@ input {
 }
 
 .page {
-  height: 100vh;
+  min-height: 100vh;
   padding: 24px;
-  overflow: hidden;
 }
 
 .setup-card {
@@ -190,6 +188,7 @@ input {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 0;
   min-width: 0;
 }
 
@@ -375,21 +374,70 @@ input {
 }
 
 @media (max-width: 800px) {
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    overflow: hidden;
+  }
+
   .page {
+    height: 100dvh;
+    min-height: 100dvh;
     padding: 0;
+    overflow: hidden;
   }
 
   .chat-layout {
-    height: 100vh;
+    height: 100dvh;
+    display: grid;
     grid-template-columns: 1fr;
     border-radius: 0;
+    box-shadow: none;
   }
 
   .sidebar {
     display: none;
   }
 
+  .chat-panel {
+    height: 100dvh;
+    min-height: 0;
+  }
+
+  .chat-header {
+    flex-shrink: 0;
+    padding: 14px 16px;
+  }
+
+  .chat-header h1 {
+    font-size: 20px;
+  }
+
+  .chat-body {
+    flex: 1;
+    min-height: 0;
+    padding: 14px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .chat-input {
+    flex-shrink: 0;
+    padding: 10px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+
   .message-card {
-    max-width: 90%;
+    max-width: 88%;
+  }
+
+  .chat-image {
+    max-width: 220px;
+    max-height: 260px;
   }
 }
